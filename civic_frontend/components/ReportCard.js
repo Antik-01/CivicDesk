@@ -1,178 +1,76 @@
+// components/ReportCard.js
 import React from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  Image,
-  TouchableOpacity,
-} from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { View, Text, Image, StyleSheet } from 'react-native';
 
-const getStatusColor = (status) => {
-  switch (status) {
-    case 'pending':
-      return '#ff9500';
-    case 'resolved':
-      return '#34c759';
-    case 'rejected':
-      return '#ff3b30';
-    default:
-      return '#666';
-  }
-};
-
-const getCategoryIcon = (category) => {
-  switch (category) {
-    case 'infrastructure':
-      return 'construct-outline';
-    case 'safety':
-      return 'shield-outline';
-    case 'environment':
-      return 'leaf-outline';
-    case 'traffic':
-      return 'car-outline';
-    default:
-      return 'document-outline';
-  }
-};
-
-export default function ReportCard({ report, showUsername = false }) {
-  const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
-  };
+const ReportCard = ({ report }) => {
+  const statusColor = report.status === 'resolved' ? 'green' : 'orange';
 
   return (
     <View style={styles.card}>
-      <View style={styles.header}>
-        <View style={styles.categoryContainer}>
-          <Ionicons
-            name={getCategoryIcon(report.category)}
-            size={20}
-            color="#007AFF"
-          />
-          <Text style={styles.category}>{report.category}</Text>
-        </View>
-        <View style={[styles.statusBadge, { backgroundColor: getStatusColor(report.status) }]}>
-          <Text style={styles.statusText}>{report.status || 'pending'}</Text>
-        </View>
+      <Text style={styles.title}>{report.text}</Text>
+      <View style={styles.detailsContainer}>
+        <Text style={styles.detailText}>
+          <Text style={styles.boldText}>Category:</Text> {report.category}
+        </Text>
+        <Text style={styles.detailText}>
+          <Text style={styles.boldText}>Status:</Text> 
+          <Text style={{ ...styles.statusText, color: statusColor }}> {report.status}</Text>
+        </Text>
+        {report.username && (
+          <Text style={styles.detailText}>
+            <Text style={styles.boldText}>User:</Text> {report.username}
+          </Text>
+        )}
       </View>
-
-      <Text style={styles.text}>{report.text}</Text>
 
       {report.image_url && (
-        <Image source={{ uri: report.image_url }} style={styles.image} />
+        <Image 
+          source={{ uri: report.image_url }} 
+          style={styles.image} 
+          resizeMode="cover" 
+        />
       )}
-
-      <View style={styles.locationContainer}>
-        <Ionicons name="location-outline" size={16} color="#666" />
-        <Text style={styles.location}>
-          {report.latitude.toFixed(4)}, {report.longitude.toFixed(4)}
-        </Text>
-      </View>
-
-      <View style={styles.footer}>
-        {showUsername && (
-          <View style={styles.userContainer}>
-            <Ionicons name="person-outline" size={16} color="#666" />
-            <Text style={styles.username}>{report.username}</Text>
-          </View>
-        )}
-        <Text style={styles.date}>{formatDate(report.created_at)}</Text>
-      </View>
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: 'white',
-    marginHorizontal: 15,
-    marginVertical: 8,
-    borderRadius: 12,
+    backgroundColor: '#fff',
+    borderRadius: 10,
     padding: 15,
+    marginVertical: 8,
     shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
-    shadowRadius: 3.84,
-    elevation: 5,
+    shadowRadius: 4,
+    elevation: 3,
   },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+  title: {
+    fontSize: 18,
+    fontWeight: 'bold',
     marginBottom: 10,
   },
-  categoryContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+  detailsContainer: {
+    marginBottom: 10,
   },
-  category: {
-    marginLeft: 5,
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#007AFF',
-    textTransform: 'capitalize',
+  detailText: {
+    fontSize: 14,
+    color: '#555',
   },
-  statusBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 12,
+  boldText: {
+    fontWeight: '600',
   },
   statusText: {
-    color: 'white',
-    fontSize: 12,
-    fontWeight: 'bold',
-    textTransform: 'uppercase',
-  },
-  text: {
-    fontSize: 16,
-    lineHeight: 22,
-    color: '#333',
-    marginBottom: 10,
+    fontWeight: '700',
+    textTransform: 'capitalize',
   },
   image: {
     width: '100%',
     height: 200,
     borderRadius: 8,
-    marginBottom: 10,
-  },
-  locationContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 10,
-  },
-  location: {
-    marginLeft: 5,
-    fontSize: 14,
-    color: '#666',
-  },
-  footer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  userContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  username: {
-    marginLeft: 5,
-    fontSize: 14,
-    color: '#666',
-    fontWeight: '500',
-  },
-  date: {
-    fontSize: 14,
-    color: '#666',
+    marginTop: 10,
   },
 });
+
+export default ReportCard;

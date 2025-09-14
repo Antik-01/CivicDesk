@@ -1,153 +1,68 @@
+// screens/LoginScreen.js
 import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  StyleSheet,
-  Alert,
-  ActivityIndicator,
-  KeyboardAvoidingView,
-  Platform,
-} from 'react-native';
-import { login } from '../services/api';
+import { View, Text, TextInput, Button, StyleSheet, Alert } from 'react-native';
+import api from '../services/api';
 import { storeToken } from '../utils/auth';
 
-export default function LoginScreen({ navigation }) {
+const LoginScreen = ({ setAuthStatus }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false);
 
   const handleLogin = async () => {
-    if (!username.trim() || !password.trim()) {
-      Alert.alert('Error', 'Please fill in all fields');
-      return;
-    }
-
-    setLoading(true);
     try {
-      const response = await login(username, password);
-      await storeToken(response.access_token);
-      // Force app to re-check auth status
-      navigation.reset({
-        index: 0,
-        routes: [{ name: 'Login' }],
-      });
+      const response = await api.post('/auth/login', { username, password });
+      const { access_token } = response.data;
+      await storeToken(access_token);
+      setAuthStatus(true); // Update state in App.js to trigger navigation
     } catch (error) {
-      Alert.alert('Login Failed', error.message || 'Please check your credentials');
-    } finally {
-      setLoading(false);
+      Alert.alert('Error', error.response?.data?.detail || 'Login failed.');
+      console.error(error);
     }
   };
 
   return (
-    <KeyboardAvoidingView 
-      style={styles.container} 
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-    >
-      <View style={styles.formContainer}>
-        <Text style={styles.title}>Welcome Back</Text>
-        <Text style={styles.subtitle}>Sign in to your account</Text>
-
-        <TextInput
-          style={styles.input}
-          placeholder="Username"
-          value={username}
-          onChangeText={setUsername}
-          autoCapitalize="none"
-          autoCorrect={false}
-        />
-
-        <TextInput
-          style={styles.input}
-          placeholder="Password"
-          value={password}
-          onChangeText={setPassword}
-          secureTextEntry
-        />
-
-        <TouchableOpacity 
-          style={[styles.button, loading && styles.buttonDisabled]} 
-          onPress={handleLogin}
-          disabled={loading}
-        >
-          {loading ? (
-            <ActivityIndicator color="white" />
-          ) : (
-            <Text style={styles.buttonText}>Sign In</Text>
-          )}
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.linkContainer}
-          onPress={() => navigation.navigate('Register')}
-        >
-          <Text style={styles.linkText}>
-            Don't have an account? <Text style={styles.link}>Sign Up</Text>
-          </Text>
-        </TouchableOpacity>
-      </View>
-    </KeyboardAvoidingView>
+    <View style={styles.container}>
+      <Text style={styles.title}>Login</Text>
+      <TextInput
+        style={styles.input}
+        placeholder="Username"
+        value={username}
+        onChangeText={setUsername}
+        autoCapitalize="none"
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Password"
+        value={password}
+        onChangeText={setPassword}
+        secureTextEntry
+      />
+      <Button title="Login" onPress={handleLogin} />
+      <Button title="Don't have an account? Register" onPress={() => navigation.navigate('Register')} color="gray" />
+    </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    justifyContent: 'center',
+    padding: 20,
     backgroundColor: '#f5f5f5',
   },
-  formContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    paddingHorizontal: 20,
-  },
   title: {
-    fontSize: 32,
+    fontSize: 24,
     fontWeight: 'bold',
+    marginBottom: 20,
     textAlign: 'center',
-    marginBottom: 8,
-    color: '#333',
-  },
-  subtitle: {
-    fontSize: 16,
-    textAlign: 'center',
-    marginBottom: 40,
-    color: '#666',
   },
   input: {
-    backgroundColor: 'white',
-    paddingHorizontal: 15,
-    paddingVertical: 15,
-    borderRadius: 10,
+    backgroundColor: '#fff',
+    padding: 15,
+    borderRadius: 8,
     marginBottom: 15,
     fontSize: 16,
-    borderWidth: 1,
-    borderColor: '#e1e1e1',
-  },
-  button: {
-    backgroundColor: '#007AFF',
-    paddingVertical: 15,
-    borderRadius: 10,
-    marginTop: 10,
-  },
-  buttonDisabled: {
-    opacity: 0.7,
-  },
-  buttonText: {
-    color: 'white',
-    textAlign: 'center',
-    fontWeight: 'bold',
-    fontSize: 16,
-  },
-  linkContainer: {
-    marginTop: 20,
-  },
-  linkText: {
-    textAlign: 'center',
-    color: '#666',
-  },
-  link: {
-    color: '#007AFF',
-    fontWeight: 'bold',
   },
 });
+
+export default LoginScreen;

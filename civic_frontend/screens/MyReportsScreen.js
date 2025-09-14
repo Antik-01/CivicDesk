@@ -1,105 +1,71 @@
-import React, { useState, useEffect } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  FlatList,
-  RefreshControl,
-  ActivityIndicator,
-  Alert,
-} from 'react-native';
+// screens/MyReportsScreen.js
+import React, { useState } from 'react';
+import { View, Text, FlatList, StyleSheet, ActivityIndicator, Alert } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 import ReportCard from '../components/ReportCard';
-import { getMyReports } from '../services/api';
+import api from '../services/api';
 
-export default function MyReportsScreen() {
+const MyReportsScreen = () => {
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
 
-  useEffect(() => {
-    fetchReports();
-  }, []);
-
-  const fetchReports = async () => {
+  const fetchMyReports = async () => {
+    setLoading(true);
     try {
-      const data = await getMyReports();
-      setReports(data);
+      const response = await api.get('/api/reports/my');
+      setReports(response.data);
     } catch (error) {
-      Alert.alert('Error', 'Failed to fetch reports');
-      console.error('Fetch reports error:', error);
+      Alert.alert('Error', error.response?.data?.detail || 'Failed to fetch your reports.');
+      console.error(error);
     } finally {
       setLoading(false);
     }
   };
 
-  const onRefresh = async () => {
-    setRefreshing(true);
-    await fetchReports();
-    setRefreshing(false);
-  };
-
-  const renderReport = ({ item }) => <ReportCard report={item} showUsername={false} />;
+  useFocusEffect(
+    React.useCallback(() => {
+      fetchMyReports();
+    }, [])
+  );
 
   if (loading) {
     return (
-      <View style={styles.centerContainer}>
-        <ActivityIndicator size="large" color="#007AFF" />
-        <Text style={styles.loadingText}>Loading your reports...</Text>
+      <View style={styles.centered}>
+        <ActivityIndicator size="large" color="#0000ff" />
       </View>
     );
   }
 
   return (
     <View style={styles.container}>
-      {reports.length === 0 ? (
-        <View style={styles.centerContainer}>
-          <Text style={styles.emptyText}>No reports yet</Text>
-          <Text style={styles.emptySubtext}>
-            Start by uploading your first report using the Upload tab
-          </Text>
-        </View>
-      ) : (
-        <FlatList
-          data={reports}
-          renderItem={renderReport}
-          keyExtractor={(item) => item.id.toString()}
-          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
-          contentContainerStyle={styles.listContainer}
-        />
-      )}
+      <FlatList
+        data={reports}
+        keyExtractor={(item) => item.id.toString()}
+        renderItem={({ item }) => <ReportCard report={item} />}
+        contentContainerStyle={reports.length === 0 && styles.centered}
+        ListEmptyComponent={
+          <Text style={styles.emptyText}>You haven't uploaded any reports yet.</Text>
+        }
+      />
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    padding: 10,
     backgroundColor: '#f5f5f5',
   },
-  centerContainer: {
+  centered: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingHorizontal: 20,
-  },
-  loadingText: {
-    marginTop: 10,
-    fontSize: 16,
-    color: '#666',
   },
   emptyText: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#333',
-    textAlign: 'center',
-  },
-  emptySubtext: {
-    fontSize: 14,
-    color: '#666',
-    textAlign: 'center',
-    marginTop: 8,
-  },
-  listContainer: {
-    paddingVertical: 10,
+    fontSize: 16,
+    color: 'gray',
   },
 });
+
+export default MyReportsScreen;

@@ -1,33 +1,40 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const TOKEN_KEY = 'auth_token';
+const TOKEN_KEY = 'user_jwt';
 
+/**
+ * Stores the JWT token securely.
+ * @param {string} token 
+ */
 export const storeToken = async (token) => {
   try {
     await AsyncStorage.setItem(TOKEN_KEY, token);
-  } catch (error) {
-    console.error('Error storing token:', error);
-    throw error;
+  } catch (e) {
+    console.error("Failed to save the token to storage", e);
   }
 };
 
+/**
+ * Retrieves the JWT token.
+ * @returns {Promise<string | null>}
+ */
 export const getToken = async () => {
   try {
-    return await AsyncStorage.getItem(TOKEN_KEY);
-  } catch (error) {
-    console.error('Error getting token:', error);
+    const token = await AsyncStorage.getItem(TOKEN_KEY);
+    return token;
+  } catch (e) {
+    console.error("Failed to fetch the token from storage", e);
     return null;
   }
 };
 
+/**
+ * Removes the JWT token, effectively logging the user out.
+ */
 export const removeToken = async () => {
   try {
     await AsyncStorage.removeItem(TOKEN_KEY);
-  } catch (error) {
-    console.error('Error removing token:', error);
+  } catch (e) {
+    console.error("Failed to remove the token from storage", e);
   }
-};
-
-export const logout = async () => {
-  await removeToken();
 };
