@@ -1,0 +1,47 @@
+{
+  "name": "civic-backend",
+  "version": "1.0.0",
+  "description": "Backend API for Civic Issues reporting system built with FastAPI",
+  "main": "app/main.py",
+  "scripts": {
+    "start": "python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload",
+    "dev": "python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload",
+    "prod": "python -m uvicorn app.main:app --host 0.0.0.0 --port 8000",
+    "build": "pip install -r requirements.txt && python -c \"import app.main; print('Build successful')\"",
+    "build-docker": "docker build -t civic-backend .",
+    "build-prod": "pip install -r requirements.txt --no-dev && python -c \"import app.main; print('Production build successful')\"",
+    "test": "python -m pytest",
+    "test-build": "npm run build && npm run test",
+    "lint": "python -m flake8 app/",
+    "format": "python -m black app/",
+    "install-deps": "pip install -r requirements.txt",
+    "setup": "python -m venv venv && pip install -r requirements.txt",
+    "docker-build": "docker build -t civic-backend .",
+    "docker-run": "docker run -p 8000:8000 civic-backend",
+    "clean": "find . -type d -name '__pycache__' -exec rm -rf {} + && find . -type f -name '*.pyc' -delete"
+  },
+  "keywords": [
+    "fastapi",
+    "python",
+    "civic-issues",
+    "api",
+    "backend"
+  ],
+  "author": "CivicDesk Team",
+  "license": "MIT",
+  "engines": {
+    "node": ">=16.0.0",
+    "python": ">=3.8.0"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-org/civicdesk-backend.git"
+  },
+  "bugs": {
+    "url": "https://github.com/your-org/civicdesk-backend/issues"
+  },
+  "homepage": "https://github.com/your-org/civicdesk-backend#readme"
+}
