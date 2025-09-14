@@ -1,13 +1,27 @@
 {
   "name": "report-management-app",
   "version": "1.0.0",
+  "description": "React Native frontend for Civic Issues reporting system",
   "main": "node_modules/expo/AppEntry.js",
   "scripts": {
     "start": "expo start",
+    "dev": "expo start --dev-client",
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "eject": "expo eject"
+    "build": "expo build",
+    "build:android": "expo build:android",
+    "build:ios": "expo build:ios",
+    "build:web": "expo build:web",
+    "prebuild": "expo prebuild",
+    "build:production": "expo build --type production",
+    "eject": "expo eject",
+    "test": "jest",
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
+    "lint:fix": "eslint . --ext .js,.jsx,.ts,.tsx --fix",
+    "clean": "expo r -c",
+    "install-deps": "npm install",
+    "reset": "expo r -c && npm install"
   },
   "dependencies": {
     "@react-navigation/native": "^6.1.9",
@@ -28,7 +42,33 @@
     "react-native-screens": "~3.22.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.20.0"
+    "@babel/core": "^7.20.0",
+    "eslint": "^8.0.0",
+    "eslint-plugin-react": "^7.0.0",
+    "eslint-plugin-react-native": "^4.0.0",
+    "jest": "^29.0.0",
+    "prettier": "^3.0.0"
   },
+  "keywords": [
+    "react-native",
+    "expo",
+    "civic-issues",
+    "mobile-app",
+    "frontend"
+  ],
+  "author": "CivicDesk Team",
+  "license": "MIT",
+  "engines": {
+    "node": ">=16.0.0",
+    "npm": ">=8.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Antik-01/CivicDesk/tree/main/civic_frontend.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Antik-01/CivicDesk/tree/main/civic_frontendissues"
+  },
+  "homepage": "https://github.com/Antik-01/CivicDesk/tree/main/civic_frontend#readme",
   "private": true
 }
